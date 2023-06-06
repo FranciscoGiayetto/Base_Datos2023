@@ -173,6 +173,25 @@ WHERE film.film_id = film_category.film_id
   AND film_category.category_id = category.category_id
 ORDER BY rental_rate DESC, special_features ASC
 ```
+
+## Ejemplos inner join
+```sql
+-- Mostrar la dirección, ciudad y país de la tienda con id 1
+SELECT address, city.city, country.country FROM store
+JOIN address ON store.address_id = address.address_id
+JOIN city ON address.city_id = city.city_id
+JOIN country ON city.country_id = country.country_id
+WHERE store.store_id = 1;
+```
+
+## Ejemplo mirar elementos sin repetir con variables
+```sql
+-- Mostrar el par de títulos de películas y la clasificación de las películas que tienen la misma clasificación.
+SELECT f1.title, f2.title, f1.rating FROM film f1, film f2
+WHERE f1.film_id <> f2.film_id AND f1.rating = f2.rating
+ORDER BY f1.rating;
+```
+
 ## Usando Limit
 ```sql
 SELECT * FROM actor
@@ -234,7 +253,8 @@ SELECT f1.title, f2.title, f1.`length`
   FROM film f1, film f2
 WHERE f1.`length` = f2.`length` AND f1.film_id <> f2.film_id;
 ```
-## ACA FALTAN LOS EJERCIOS DE LA CLASE 4
+### [Ejercicos clase 4](Clases/clase4.sql)
+
 
 ## Subqueries in WHERE
 
@@ -336,7 +356,7 @@ SELECT title,`length`
                      FROM film f2 
                     WHERE f2.`length` > f1.`length`); 
 ```
-## ACA FALTA LOS EJECIOS DE LA CLASE 6
+### [Ejercicos clase 6](Clases/clase6.sql)
 ## ALL / ANY
 
 **ALL** significa "devolver VERDADERO si la comparación es VERDADERA para TODOS los valores en la columna que devuelve la subconsulta".
@@ -372,16 +392,14 @@ SELECT title,length
 ```
 
 
-**ANY** means  “return TRUE if the comparison is TRUE for ANY of the values in the column that the subquery returns.”
-For example:
+**ANY** significa "devolver VERDADERO si la comparación es VERDADERA para CUALQUIERA de los valores en la columna que devuelve la subconsulta".
+Por ejemplo:
 
 ```sql
 SELECT s1 FROM t1 WHERE s1 > ANY (SELECT s1 FROM t2);
 ```
 
-Suppose that there is a row in table t1 containing (10). The expression is TRUE if table t2 contains (21,14,7) 
-because there is a value 7 in t2 that is less than 10. 
-The expression is FALSE if table t2 contains (20,10), or if table t2 is empty
+Supongamos que hay una fila en la tabla t1 que contiene (10). La expresión es VERDADERA si la tabla t2 contiene (21, 14, 7) porque hay un valor 7 en t2 que es menor que 10. La expresión es FALSA si la tabla t2 contiene (20, 10), o si la tabla t2 está vacía.
 
 ```sql
 SELECT title,length 
@@ -432,8 +450,7 @@ SELECT *
 
 ## Subqueries in SELECT
 
-This is an example to show that this can also be done, there are simpler ways of
-doing this:
+Este es un ejemplo para demostrar que esto también se puede hacer, existen formas más simples de hacerlo.
 
 ```sql
 SELECT customer_id, 
@@ -474,30 +491,26 @@ SELECT customer.customer_id,
  GROUP BY customer_id, first_name, last_name 
  ORDER BY max_amount DESC, customer_id DESC 
  ```
-## ACA FALTA LOS EJERCIOS DE LA 7
-## Aggregations
+### [Ejercicos clase 7](Clases/clase7.sql)
+## Agregaciones
 
-*  The MIN() function returns the smallest value of the selected column.
+  * La función MIN() devuelve el valor más pequeño de la columna seleccionada.
+  * La función MAX() devuelve el valor más grande de la columna seleccionada.
+  * La función COUNT() devuelve el número de filas que coinciden con un criterio especificado.
+  * La función AVG() devuelve el valor promedio de una columna numérica.
+  * La función SUM() devuelve la suma total de una columna numérica.
 
-*  The MAX() function returns the largest value of the selected column.
-
-*  The COUNT() function returns the number of rows that matches a specified criteria.
-
-*  The AVG() function returns the average value of a numeric column.
-
-*  The SUM() function returns the total sum of a numeric column.
-
-#### Simple example
+#### Ejemplo simple
 
 ```sql
--- Find the minimum payment of users whose last name starts with R
+-- Encontrar el pago mínimo de los usuarios cuyo apellido comienza con R
 SELECT MIN(amount)
   FROM customer, payment
  WHERE customer.customer_id = payment.customer_id
    AND customer.last_name LIKE 'R%'
 ```
 
-#### Using Count
+####  Count
 ```sql
 --
 SELECT COUNT(*)
@@ -509,7 +522,7 @@ SELECT COUNT(DISTINCT film_id)
   WHERE store_id = 1;
 ```
 
-#### When to use subqueries
+#### ¿Cuando uso subqueries?
 
 ```sql
 -- wrong result
@@ -547,8 +560,7 @@ FROM ( SELECT AVG(length) av
 ```
 
 ```sql
--- complex example: Calculate diff between average film length
--- in store 1 vs other stores
+-- Ejemplo complejo: Calcular la diferencia entre la duración promedio de las películas en la tienda 1 y las demás tiendas.
 
 SELECT  str1.av - other_stores.av
 FROM (
@@ -564,7 +576,7 @@ SELECT AVG(length) av
  					WHERE store_id = 1)) AS other_stores
 ```
 
-Similar but with subqueries in select
+Parecido pero con subquerie en el where
 
 ```sql
 SELECT
@@ -583,7 +595,7 @@ FROM film;
 ```
 ## Group By
 
-The GROUP BY clause is used in a SELECT statement to collect data across multiple records and group the results by one or more columns.
+La cláusula GROUP BY se utiliza en una declaración SELECT para recopilar datos de múltiples registros y agrupar los resultados según una o más columnas.
 
 ### Syntax
 
@@ -600,38 +612,39 @@ SELECT rating, title
   FROM film
 ORDER BY rating
 
--- Find films amounts per rating
+-- Encontrar la cantidad de películas por clasificación
 SELECT rating, COUNT(*)
-  FROM film
- GROUP BY rating
+FROM film
+GROUP BY rating
 
--- Find films durations per rating
+-- Encontrar la duración promedio de las películas por clasificación
 SELECT rating, AVG(length)
-  FROM film
- GROUP BY rating
+FROM film
+GROUP BY rating
 ```
 
 ```sql
--- Find films durations per rating and special_features
- SELECT rating, special_features, `length`
-  FROM film
- ORDER BY rating, special_features
+-- Encontrar la duración de las películas por clasificación y características especiales
+SELECT rating, special_features, length
+FROM film
+ORDER BY rating, special_features
 
--- Using other aggretation functions
-SELECT rating, special_features, MIN(`length`), MAX(`length`)
-  FROM film
- GROUP BY rating, special_features
+-- Utilizando otras funciones de agregación
+SELECT rating, special_features, MIN(length), MAX(length)
+FROM film
+GROUP BY rating, special_features
 
--- Working with aggregated columns on outer select.
+-- Trabajando con columnas agregadas en la consulta externa
 SELECT mx - mn AS diff
-FROM (SELECT rating, special_features, MIN(`length`) AS mn, MAX(`length`) AS mx
- 	    FROM film
-        GROUP BY rating, special_features) t1
+FROM (SELECT rating, special_features, MIN(length) AS mn, MAX(length) AS mx
+FROM film
+GROUP BY rating, special_features) t1
 ```
+
 
 ## Having
 
-The HAVING clause is used in combination with the GROUP BY clause to restrict the groups of returned rows to only those whose the condition is TRUE.
+La cláusula HAVING se utiliza en combinación con la cláusula GROUP BY para restringir los grupos de filas devueltas a solo aquellos cuya condición es VERDADERA.
 
 #### Syntax
 
@@ -644,10 +657,10 @@ GROUP BY expression1, expression2, ... expression_n
 HAVING condition;
 ```
 
-#### Example
+*Ejemplo* 
 
 ```sql
--- Find customers that rented only one film
+-- Encontrar clientes que hayan alquilado solo una película.
 SELECT c.customer_id, first_name, last_name, COUNT(*)
   FROM rental r1, customer c
  WHERE c.customer_id = r1.customer_id
@@ -656,7 +669,7 @@ HAVING COUNT(*) = 1
 ```
 
 ```sql
--- Show the films' ratings where the minimum film duration in that group is greater than 46
+-- Mostrar las clasificaciones de las películas donde la duración mínima de película en ese grupo es mayor que 46.
 SELECT rating, MIN(`length`)
 FROM film
 GROUP BY rating
@@ -664,13 +677,13 @@ HAVING MIN(`length`) > 46
 ```
 
 ```sql
--- Show ratings that have less than 195 films
+-- Mostrar las clasificaciones que tienen menos de 195 películas.
 SELECT rating, COUNT(*) AS total
 FROM film
 GROUP BY rating
 HAVING COUNT(*) < 195
 
--- same but with subqueries
+-- Igual solo que con subqueries
 SELECT DISTINCT rating,
 (SELECT COUNT(*) FROM film f3 WHERE f3.rating = f1.rating) AS total
 FROM film f1
@@ -679,10 +692,87 @@ FROM film f2 WHERE f1.rating = f2.rating) < 195
 ```
 
 ```sql
--- Show ratings where their film duration average is grater than all films duration average.
+-- Mostrar las clasificaciones donde el promedio de duración de sus películas es mayor que el promedio de duración de todas las películas.
 SELECT rating, AVG(`length`)
 FROM film
 GROUP BY rating
 HAVING AVG(`length`) > (SELECT AVG(`length`) FROM film)
 ```
-## FALTAN EJERCIOS CLASE 9
+### [Ejercicos clase 9](Clases/clase9.sql)
+
+
+
+## Ejercicios TEO
+```sql
+select
+    first_name,
+    count(rental_id), (
+        select max(r.return_date)
+        from rental r
+        where
+            r.customer_id = c1.customer_id
+    ) as maximo
+from customer c1
+    inner join rental using(customer_id)
+group by first_name, maximo;
+
+#informe de cada cliente su cantidad de rentals y su ultima devolucion
+select c2.first_name
+from customer c2, (
+        select
+            first_name,
+            count(rental_id) as cantidad,
+            max(return_date) as maximo
+        from customer c1
+            inner join rental using(customer_id)
+        group by first_name
+        having cantidad > 30
+    ) as t1
+where
+    c2.first_name = t1.first_name;
+
+select
+    first_name,
+    count(rental_id) as cantidad,
+    max(return_date) as maximo
+from customer c1
+    inner join rental using(customer_id)
+group by first_name;
+
+select title,(select avg(`length`) from film)from film;
+
+#class may 10 select title,(select max(length) from film)from film;
+
+#venta maxima de los ventas promedio
+select payment_id, amount
+from payment
+WHERE amount != (
+        select min(amount)
+        from payment
+    ) AND amount != (
+        select max(amount)
+        from payment
+    );
+
+select
+    c.first_name,
+    sum(p.amount) as monto_total
+from customer c
+    inner join payment p using (customer_id)
+group by c.first_name
+having sum(p.amount) > 11;
+
+
+#la diferencia entre las dos siguientes queries, el join pone un dato al lado del otro, por lo que toma valores de mas. Mientras que la subquery hace un filtrado de datos. 
+select avg(f.length)#forma incorrecta
+from film f, inventory i #obtiene el promedio buscando las pelis que esten en el inventario de la tienda 1
+where f.film_id = i.film_id
+    and i.store_id = 1;
+
+select avg(length) #forma correcta
+from film # busca el promedio de las pelis que esten dentro de un conjunto ya filtrado
+WHERE film_id in(select film_id
+        from inventory
+        where store_id = 1
+    );
+ ```
