@@ -1,6 +1,20 @@
-#  <p align="center">📊 RESUMEN  BASE DE DATOS 📊</p>
+#  <p align="center">📊 APUNTE  BASE DE DATOS 📊</p>
 
--- FALTA LA TEORIA
+## Normalizacion
+1. __Primera Forma Normal (1NF)__:
+   
+    La Primera Forma Normal se centra en eliminar la redundancia de datos y asegurar que cada columna contenga valores atómicos. Para cumplir con esta forma normal, cada tabla debe tener una clave primaria única y las columnas no deben contener valores repetidos. Además, cada valor en una columna debe ser indivisible, es decir, no puede estar compuesto por varios valores.
+
+2. __Segunda Forma Normal (2NF)__:
+   
+    La Segunda Forma Normal se basa en la Primera Forma Normal y establece que una tabla debe cumplir con 1NF y además, todos los atributos no clave deben depender completamente de la clave primaria. Esto significa que si una tabla tiene una clave primaria compuesta por múltiples columnas, cada atributo no clave debe depender de todas las columnas de la clave primaria en su totalidad, y no solo de una parte de ella.
+
+3. __Tercera Forma Normal (3NF)__:
+   
+    La Tercera Forma Normal también se basa en las formas normales anteriores y establece que una tabla debe cumplir con 2NF y, además, no debe tener dependencias transitivas. Esto significa que ningún atributo no clave debe depender de otro atributo no clave. Si un atributo no clave depende de otro atributo no clave, se debe crear una nueva tabla para almacenar la información y establecer una relación entre ambas tablas utilizando una clave externa.
+
+Estas tres formas normales son parte de un proceso gradual de normalización que busca eliminar la redundancia y las anomalías en la estructura de una base de datos, mejorando así su eficiencia y coherencia. Cabe destacar que existen formas normales adicionales, como la Cuarta Forma Normal (4NF) y la Quinta Forma Normal (5NF), que abordan problemas más específicos de diseño de bases de datos.
+
 ## Alterando tablas
 ### Agregar Primary Keys
 
@@ -700,6 +714,161 @@ HAVING AVG(`length`) > (SELECT AVG(`length`) FROM film)
 ```
 ### [Ejercicos clase 9](Clases/clase9.sql)
 
+## PRODUCTO CARTESIANO
+Esto es lo que vimos en clases anteriores para obtener resultados de varias tablas
+
+![cartesian-product](images/cartesian-product.png)
+
+## INNER JOIN
+
+[INNER] JOIN selecciona todas las filas de ambas tablas participantes para que aparezcan en el resultado si y solo si ambas tablas cumplen las condiciones especificadas en la cláusula ON.
+
+### ON clause
+
+![inner-join](images/inner-join.png)
+
+
+### Using 
+
+Cuando los nombres de columna coinciden en ambas tablas, se puede usar la cláusula USING.
+
+![inner-join-using-clause](images/inner-join-using-clause.png)
+
+Example
+
+```sql
+SELECT *
+  FROM film
+      INNER JOIN `language`
+           USING (language_id)
+```
+
+### INNER JOIN with alias
+
+Los nombres de las tablas se pueden definir y utilizar así:
+
+**Ejemplo**
+
+```sql
+SELECT *
+  FROM film AS f
+      INNER JOIN `language` AS l
+              ON f.language_id = l.language_id
+```              
+
+### INNER JOIN using tres tablas
+
+![inner-join-more-tables](images/inner-join-more-tables.png)
+
+### Primera Parte
+![inner-join-more-tables-explanation-1](images/inner-join-more-tables-explanation-1.png)
+
+
+### Segunda Parte
+![inner-join-more-tables-explanation-2](images/inner-join-more-tables-explanation-2.png)
+
+
+### Resultado Final
+![inner-join-more-tables-explanation-3](images/inner-join-more-tables-explanation-3.png)
+
+**Ejemplo**:
+
+```sql
+SELECT * 
+  FROM film 
+       INNER JOIN film_category 
+               ON film.film_id = film_category.film_id 
+       INNER JOIN category 
+               ON film_category.category_id = category.category_id; 
+
+-- same?
+SELECT *
+  FROM film, film_category, category
+ WHERE film.film_id = film_category.film_id
+   AND film_category.category_id = category.category_id;               
+
+-- with using
+SELECT * 
+  FROM film 
+       INNER JOIN film_category 
+            USING ( film_id ) 
+       INNER JOIN category 
+            USING ( category_id );               
+
+```
+
+## NATURAL JOIN
+
+NATURAL JOIN es una unión que realiza la misma tarea que una INNER (o LEFT JOIN), en la que la cláusula ON o USING se refiere a todas las columnas que tienen en común las tablas que se van a unir.
+
+MySQL NATURAL JOIN está estructurado de tal manera que las columnas con el mismo nombre de las tablas asociadas aparecerán una sola vez.
+
+1. Las tablas asociadas tienen uno o más pares de columnas con nombres idénticos.
+2. Las columnas deben ser del mismo tipo de datos.
+3. No use la cláusula ON en una UNIÓN NATURAL.
+
+
+![natural-join](images/natural-join.png)
+
+**Ejemplo**:
+
+```sql
+SELECT *
+  FROM film
+      NATURAL JOIN `language`
+```
+
+## Ejemplos
+
+```sql
+-- find films pairs with same duration
+SELECT f1.title, f2.title, f1.`length` 
+  FROM film f1, film f2
+ WHERE f1.`length` = f2.`length` AND f1.film_id < f2.film_id;
+
+-- with join
+SELECT f1.title, f2.title, f1.`length` 
+  FROM film f1 
+       INNER JOIN film f2 USING(`length`)
+WHERE f1.film_id < f2.film_id
+```
+
+```sql
+-- natural join the same table... ???
+SELECT *
+  FROM actor a1
+       NATURAL JOIN actor a2
+```
+
+
+## LEFT OUTER JOIN
+LEFT [OUTER] JOIN une dos tablas y obtiene filas en función de una condición, que coinciden en ambas tablas e incluye las filas no coincidentes de la tabla escrita antes de la cláusula JOIN.
+
+![left-outer-join](images/left-outer-join.png)
+
+
+Example:
+
+```sql
+-- add a new copy of ACADEMY DINOSAUR to store 1
+INSERT INTO inventory
+(film_id, store_id, last_update)
+VALUES(1, 1, '2017-02-15 05:09:17.000');
+
+-- this shows what?
+SELECT title, rental.*
+  FROM film
+       INNER JOIN inventory USING (film_id)       
+       LEFT OUTER JOIN rental USING (inventory_id)
+WHERE store_id = 1 
+AND film_id = 1;
+```
+
+## RIGHT OUTER JOIN
+
+RIGHT [OUTER] JOIN une dos tablas y obtiene filas en función de una condición, que coinciden en ambas tablas e incluye las filas no coincidentes disponibles en la tabla escrita después de la cláusula JOIN.
+
+![right-outer-join](images/right-outer-join.png)
 
 
 ## Ejercicios TEO
