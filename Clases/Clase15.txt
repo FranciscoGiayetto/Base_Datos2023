@@ -1,0 +1,48 @@
+Descripción de Vistas Materializadas:
+Las vistas materializadas son objetos de base de datos que almacenan los resultados de una consulta en forma de tabla física. 
+A diferencia de las vistas tradicionales, que son consultas virtuales ejecutadas en tiempo real, las vistas materializadas 
+contienen datos precalculados y almacenados, lo que permite un acceso más rápido y eficiente a la información requerida.
+
+¿Por qué se usan las Vistas Materializadas?
+Las vistas materializadas se utilizan para mejorar el rendimiento y la eficiencia de las consultas en bases de datos con datos 
+complejos o de gran tamaño. Al precalcular y almacenar los resultados de las consultas, las vistas materializadas reducen la carga 
+en el servidor de bases de datos, aceleran el acceso a los datos y mejoran el tiempo de respuesta de las consultas.
+
+Las ventajas de utilizar vistas materializadas incluyen:
+    Mejora del rendimiento: Almacenar los resultados de consultas frecuentes o complejas evita la necesidad de 
+    volver a calcularlos cada vez que se accede a la vista, lo que mejora significativamente el rendimiento de las consultas.
+
+    Reducción de la sobrecarga de la base de datos: Las vistas materializadas reducen la carga de trabajo en la base de datos 
+    al eliminar la necesidad de ejecutar consultas complejas repetidamente.
+
+    Soporte para informes y análisis rápidos: Las vistas materializadas facilitan la generación rápida de informes y análisis, 
+    ya que los datos se almacenan previamente en la vista y no es necesario realizar cálculos en tiempo real.
+
+    Mejora de la escalabilidad: Las vistas materializadas pueden mejorar la escalabilidad de la base de datos, 
+    ya que ayudan a reducir la carga en el servidor, especialmente en entornos con altos volúmenes de datos y usuarios.
+
+Algunas alternativas a las vistas materializadas son:
+
+    Índices: Los índices son estructuras de datos que mejoran la velocidad de búsqueda y recuperación de registros en una tabla, 
+    sin almacenar físicamente los resultados de una consulta.
+
+    Tablas temporales: Se pueden utilizar tablas temporales para almacenar resultados intermedios o precalculados de una consulta 
+    y luego utilizarlos para mejorar el rendimiento de otras operaciones.
+
+    Tablas resumen: Las tablas de resumen contienen datos agregados y precalculados para facilitar consultas de agregación y análisis.
+
+DBMS donde existen las Vistas Materializadas:
+Las vistas materializadas son compatibles con varios sistemas de gestión de bases de datos (DBMS). 
+Algunos de los DBMS que admiten vistas materializadas incluyen:
+
+    Oracle Database: Oracle proporciona soporte completo para vistas materializadas, lo que incluye vistas materializadas simples 
+    y vistas materializadas de actualización rápida.
+
+    PostgreSQL: PostgreSQL admite vistas materializadas a partir de la versión 9.3, lo que permite a los usuarios crear vistas 
+    materializadas utilizando la cláusula MATERIALIZED VIEW.
+
+    SQL Server: SQL Server admite vistas indexadas, que funcionan de manera similar a las vistas materializadas al precalcular 
+    y almacenar los resultados.
+
+    MySQL: MySQL comenzó a admitir vistas materializadas a partir de la versión 5.7.8, lo que permite crear vistas materializadas 
+    utilizando la cláusula MATERIALIZED VIEW. Sin embargo, no todas las características de las vistas materializadas están disponibles en MySQL.
